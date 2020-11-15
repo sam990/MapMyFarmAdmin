@@ -1,0 +1,15 @@
+projects:
+  Farms API:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.js
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: javascript
+        generatedFileName: ''
+        docsFilePath: src/graphql
+        region: ap-south-1
+        apiId: lvg26v2zqvatpp7l66w5xlovda
+        maxDepth: 2

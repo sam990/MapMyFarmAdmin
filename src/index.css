@@ -7,6 +7,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@font-face {
+  font-family: 'AlegreyaSansSCMedium';
+  src: local('AlegreyaSansSCMedium'), url(./fonts/alegreyasansscmedium.ttf) format('woff');
+}
+
+button::-moz-focus-inner {
+  border: 0;
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
