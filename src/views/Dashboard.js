@@ -70,7 +70,7 @@ class Dashboard extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // let myCredentials = new AWS.CognitoIdentityCredentials({ IdentityPoolId: awsmobile["aws_cognito_identity_pool_id"] });
     // AWS.config.region = awsmobile["aws_cognito_region"];
     // AWS.config.credentials = myCredentials;
@@ -126,29 +126,40 @@ class Dashboard extends React.Component {
       });
     });
 
-    API.graphql(graphqlOperation(queries.listFarms, { limit: 100 })).then(res => {
-      // console.log(res);
-      let totalArea = 0.0;
 
-      for (let farm of res.data.listFarms.items) {
-        totalArea += farm.area;
+    let forwardToken = null;
+    let remaining = true;
+    let totalArea = 0.0;
+
+
+    try {
+      while(remaining) {
+        const res = await API.graphql(graphqlOperation(queries.listFarms, { limit: 100 , nextToken: forwardToken}));
+        
+        for (let farm of res.data.listFarms.items) {
+          totalArea += farm.area;
+        }
+
+        if(res.data.listFarms.nextToken == null) {
+          remaining = false;
+        } else {
+          forwardToken = res.data.listFarms.nextToken;
+        }
       }
-      
-      // console.log(totalArea);
 
       this.setState({
         areasLoading: false,
-        area: Math.floor(totalArea),
-      })
+        area: Math.round(totalArea),
+      });
 
-    }, err => { 
+    }
+    catch (err) {
       console.log(err);
       this.setState({
         areasLoading: false,
         area: -1,
-      })
-    });
-
+      });
+    }
   }
 
   setBgChartData = name => {

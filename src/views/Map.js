@@ -15,275 +15,103 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React, { useRef } from "react";
 // react plugin used to create google maps
 import {
   withScriptjs,
   withGoogleMap,
   GoogleMap,
-  Marker
+  Marker,
+  Polygon,
 } from "react-google-maps";
 
 // reactstrap components
-import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col} from "reactstrap";
+
+import PuffLoader from "react-spinners/PuffLoader";
+
+import { Auth, API, graphqlOperation } from "aws-amplify";
+// import AWS from "aws-sdk";
+import awsconfig from "aws-exports";
+import * as queries from "../graphql/queries";
+
+import LatLng from "variables/LatLng";
 
 const MapWrapper = withScriptjs(
   withGoogleMap(props => (
     <GoogleMap
-      defaultZoom={13}
-      defaultCenter={{ lat: 40.748817, lng: -73.985428 }}
+      defaultZoom={4}
+      defaultCenter={{ lat: 23.5937, lng: 78.9629 }}
       defaultOptions={{
-        scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
-        styles: [
-          {
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#1d2c4d"
-              }
-            ]
-          },
-          {
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#8ec3b9"
-              }
-            ]
-          },
-          {
-            elementType: "labels.text.stroke",
-            stylers: [
-              {
-                color: "#1a3646"
-              }
-            ]
-          },
-          {
-            featureType: "administrative.country",
-            elementType: "geometry.stroke",
-            stylers: [
-              {
-                color: "#4b6878"
-              }
-            ]
-          },
-          {
-            featureType: "administrative.land_parcel",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#64779e"
-              }
-            ]
-          },
-          {
-            featureType: "administrative.province",
-            elementType: "geometry.stroke",
-            stylers: [
-              {
-                color: "#4b6878"
-              }
-            ]
-          },
-          {
-            featureType: "landscape.man_made",
-            elementType: "geometry.stroke",
-            stylers: [
-              {
-                color: "#334e87"
-              }
-            ]
-          },
-          {
-            featureType: "landscape.natural",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#023e58"
-              }
-            ]
-          },
-          {
-            featureType: "poi",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#283d6a"
-              }
-            ]
-          },
-          {
-            featureType: "poi",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#6f9ba5"
-              }
-            ]
-          },
-          {
-            featureType: "poi",
-            elementType: "labels.text.stroke",
-            stylers: [
-              {
-                color: "#1d2c4d"
-              }
-            ]
-          },
-          {
-            featureType: "poi.park",
-            elementType: "geometry.fill",
-            stylers: [
-              {
-                color: "#023e58"
-              }
-            ]
-          },
-          {
-            featureType: "poi.park",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#3C7680"
-              }
-            ]
-          },
-          {
-            featureType: "road",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#304a7d"
-              }
-            ]
-          },
-          {
-            featureType: "road",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#98a5be"
-              }
-            ]
-          },
-          {
-            featureType: "road",
-            elementType: "labels.text.stroke",
-            stylers: [
-              {
-                color: "#1d2c4d"
-              }
-            ]
-          },
-          {
-            featureType: "road.highway",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#2c6675"
-              }
-            ]
-          },
-          {
-            featureType: "road.highway",
-            elementType: "geometry.fill",
-            stylers: [
-              {
-                color: "#9d2a80"
-              }
-            ]
-          },
-          {
-            featureType: "road.highway",
-            elementType: "geometry.stroke",
-            stylers: [
-              {
-                color: "#9d2a80"
-              }
-            ]
-          },
-          {
-            featureType: "road.highway",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#b0d5ce"
-              }
-            ]
-          },
-          {
-            featureType: "road.highway",
-            elementType: "labels.text.stroke",
-            stylers: [
-              {
-                color: "#023e58"
-              }
-            ]
-          },
-          {
-            featureType: "transit",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#98a5be"
-              }
-            ]
-          },
-          {
-            featureType: "transit",
-            elementType: "labels.text.stroke",
-            stylers: [
-              {
-                color: "#1d2c4d"
-              }
-            ]
-          },
-          {
-            featureType: "transit.line",
-            elementType: "geometry.fill",
-            stylers: [
-              {
-                color: "#283d6a"
-              }
-            ]
-          },
-          {
-            featureType: "transit.station",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#3a4762"
-              }
-            ]
-          },
-          {
-            featureType: "water",
-            elementType: "geometry",
-            stylers: [
-              {
-                color: "#0e1626"
-              }
-            ]
-          },
-          {
-            featureType: "water",
-            elementType: "labels.text.fill",
-            stylers: [
-              {
-                color: "#4e6d70"
-              }
-            ]
-          }
-        ]
+        // scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
+        streetViewControl: false,
       }}
     >
-      <Marker position={{ lat: 40.748817, lng: -73.985428 }} />
+
+    {props.polygons.map(
+      (val) => (<Polygon path={val} options={{fillColor: "blue", strokeWeight: 0}}/>)
+    )}
+
+    {props.polygons.map(
+      (val) => (<Marker defaultPosition={val[0]}/>)
+    )}
     </GoogleMap>
   ))
 );
 
 class Map extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loading: true,
+      polygons: [],
+    };
+  }
+
+  async componentDidMount() {
+
+    let forwardToken = null;
+    let remaining = true;
+
+    // load all farms
+    try {
+      while(remaining) {
+        const res = await API.graphql(graphqlOperation(queries.listFarms, { limit: 100 , nextToken: forwardToken}));
+        
+        for (let farm of res.data.listFarms.items) {
+          let path = [];
+          for (let i = 0; i < farm.coordinatesLat.length; i++) {
+            path.push(new LatLng(farm.coordinatesLat[i], farm.coordinatesLng[i]));
+          }
+          
+          this.setState({
+            polygons: [...this.state.polygons, path],
+          });
+        }
+
+        if(res.data.listFarms.nextToken == null) {
+          remaining = false;
+        } else {
+          forwardToken = res.data.listFarms.nextToken;
+        }
+      }
+
+      this.setState({
+        loading: false,
+      });
+
+    }
+    catch (err) {
+      console.log(err);
+      this.setState({
+        loading: false
+      });
+    }
+  }
+
+
   render() {
     return (
       <>
@@ -296,14 +124,32 @@ class Map extends React.Component {
                   <div
                     id="map"
                     className="map"
-                    style={{ position: "relative", overflow: "hidden" }}
+                    style={{ position: "relative", overflow: "hidden", textAlign: "center"}}
                   >
                     <MapWrapper
                       googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1DSNQSBG2jH_VCslFAkBH2hl7p2JxN7E"
                       loadingElement={<div style={{ height: `100%` }} />}
                       containerElement={<div style={{ height: `100%` }} />}
                       mapElement={<div style={{ height: `100%` }} />}
+                      polygons={this.state.polygons}
                     />
+                    <div 
+                      style={{
+                        display: this.state.loading ? "flex" : "none",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%"
+                      }}
+                    >
+                      <PuffLoader size={150} color="blue" loading={this.state.loading}/>
+                    </div>
+                    {/* <div style={{position: "absolute", top: 0, left: 0, right: 0, bottom: 0, margin: "auto"}}>
+                      <RingLoader/>
+                    </div> */}
                   </div>
                 </CardBody>
               </Card>
