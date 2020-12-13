@@ -11,6 +11,7 @@ export const getFarm = /* GraphQL */ `
       coordinatesLat
       coordinatesLng
       land_type
+      ownerSub
     }
   }
 `;
@@ -37,6 +38,7 @@ export const getHarvest = /* GraphQL */ `
       prev_pesticide_packets
       prev_pesticide_charge
       comments
+      ownerSub
     }
   }
 `;
@@ -50,6 +52,7 @@ export const batchGetFarms = /* GraphQL */ `
       coordinatesLat
       coordinatesLng
       land_type
+      ownerSub
     }
   }
 `;
@@ -76,6 +79,7 @@ export const batchGetHarvests = /* GraphQL */ `
       prev_pesticide_packets
       prev_pesticide_charge
       comments
+      ownerSub
     }
   }
 `;
@@ -90,6 +94,7 @@ export const listUserFarms = /* GraphQL */ `
         coordinatesLat
         coordinatesLng
         land_type
+        ownerSub
       }
       nextToken
     }
@@ -123,6 +128,7 @@ export const listUserHarvests = /* GraphQL */ `
         prev_pesticide_packets
         prev_pesticide_charge
         comments
+        ownerSub
       }
       nextToken
     }
@@ -162,18 +168,19 @@ export const listFarms = /* GraphQL */ `
         coordinatesLat
         coordinatesLng
         land_type
+        ownerSub
       }
       nextToken
     }
   }
 `;
-export const listHarvest = /* GraphQL */ `
-  query ListHarvest(
+export const listHarvests = /* GraphQL */ `
+  query ListHarvests(
     $filter: TableHarvestFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    listHarvest(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listHarvests(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
         crop
@@ -195,6 +202,7 @@ export const listHarvest = /* GraphQL */ `
         prev_pesticide_packets
         prev_pesticide_charge
         comments
+        ownerSub
       }
       nextToken
     }

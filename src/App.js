@@ -13,6 +13,7 @@ import { Button } from '@material-ui/core';
 import { createBrowserHistory } from "history";
 import { Router, Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 import AWS from "aws-sdk";
+import APIConfig from "aws-api-config";
 
 import AdminLayout from "layouts/Admin/Admin.js";
 import RTLLayout from "layouts/RTL/RTL.js";
@@ -20,8 +21,12 @@ import RTLLayout from "layouts/RTL/RTL.js";
 import "assets/scss/black-dashboard-react.scss";
 import "assets/demo/demo.css";
 import "assets/css/nucleo-icons.css";
+import "assets/css/text.css";
+import "assets/css/progress-button.css";
 
 Amplify.configure(awsconfig);
+Amplify.configure(APIConfig);
+
 // let myCredentials = new AWS.CognitoIdentityCredentials({ IdentityPoolId: awsconfig["aws_cognito_identity_pool_id"] });
 // AWS.config.region = awsconfig["aws_cognito_region"];
 // AWS.config.credentials = myCredentials;

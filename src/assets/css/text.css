@@ -1,0 +1,16 @@
+.my-text {
+    color: white !important;
+}
+
+.white-content .my-text {
+    color: rgba(34, 42, 66, 0.7) !important;
+}
+
+.my-danger-text-btn {
+    color: rgb(241, 138, 138);
+    transition: color 0.3s ease;
+}
+
+.my-danger-text-btn:hover {
+    color: rgb(255, 255, 255);
+}

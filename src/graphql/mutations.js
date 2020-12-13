@@ -11,6 +11,7 @@ export const createFarm = /* GraphQL */ `
       coordinatesLat
       coordinatesLng
       land_type
+      ownerSub
     }
   }
 `;
@@ -37,6 +38,7 @@ export const createHarvest = /* GraphQL */ `
       prev_pesticide_packets
       prev_pesticide_charge
       comments
+      ownerSub
     }
   }
 `;
@@ -58,6 +60,7 @@ export const updateFarm = /* GraphQL */ `
       coordinatesLat
       coordinatesLng
       land_type
+      ownerSub
     }
   }
 `;
@@ -84,6 +87,7 @@ export const updateHarvest = /* GraphQL */ `
       prev_pesticide_packets
       prev_pesticide_charge
       comments
+      ownerSub
     }
   }
 `;
@@ -97,6 +101,7 @@ export const deleteFarm = /* GraphQL */ `
       coordinatesLat
       coordinatesLng
       land_type
+      ownerSub
     }
   }
 `;
@@ -123,6 +128,7 @@ export const deleteHarvest = /* GraphQL */ `
       prev_pesticide_packets
       prev_pesticide_charge
       comments
+      ownerSub
     }
   }
 `;

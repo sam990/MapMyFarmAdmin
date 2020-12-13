@@ -13,3 +13,6 @@ projects:
         region: ap-south-1
         apiId: lvg26v2zqvatpp7l66w5xlovda
         maxDepth: 2
+extensions:
+  amplify:
+    version: 3

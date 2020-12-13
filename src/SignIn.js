@@ -13,10 +13,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import logo from './mmf_logo_signin.png';
+import logo from './mmf_logo.png';
 import SignInImg from './signin_bg.jpg';
 import ProgressButton from 'react-progress-button';
-import 'react-progress-button/react-progress-button.css'
 import './index.css';
 import { SignIn } from 'aws-amplify-react';
 import { Auth } from 'aws-amplify';

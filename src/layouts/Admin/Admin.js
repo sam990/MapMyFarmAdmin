@@ -29,6 +29,7 @@ import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 import routes from "routes.js";
 
 import logo from "assets/img/react-logo.png";
+import logo2 from 'mmf_logo.png';
 
 var ps;
 
@@ -116,9 +117,10 @@ class Admin extends React.Component {
             routes={routes}
             bgColor={this.state.backgroundColor}
             logo={{
-              outterLink: "https://www.creative-tim.com/",
+              // outterLink: "..",
+              innerLink: "dashboard",
               text: "MapMyFarm",
-              imgSrc: logo
+              imgSrc: logo2
             }}
             toggleSidebar={this.toggleSidebar}
           />
@@ -143,10 +145,10 @@ class Admin extends React.Component {
             )}
           </div>
         </div>
-        <FixedPlugin
+        {/* <FixedPlugin
           bgColor={this.state.backgroundColor}
           handleBgClick={this.handleBgClick}
-        />
+        /> */}
       </>
     );
   }

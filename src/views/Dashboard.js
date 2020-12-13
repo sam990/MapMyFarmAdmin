@@ -56,6 +56,12 @@ import { Auth, API, graphqlOperation } from "aws-amplify";
 import awsconfig from "aws-exports";
 import * as queries from "../graphql/queries";
 
+import {
+  getNumberOfUsers,
+  getUsersInGroup,
+  getAllFarms
+} from "utilities/dbOps";
+
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
@@ -70,7 +76,7 @@ class Dashboard extends React.Component {
     };
   }
 
-  async componentDidMount() {
+componentDidMount() {
     // let myCredentials = new AWS.CognitoIdentityCredentials({ IdentityPoolId: awsmobile["aws_cognito_identity_pool_id"] });
     // AWS.config.region = awsmobile["aws_cognito_region"];
     // AWS.config.credentials = myCredentials;
@@ -87,79 +93,53 @@ class Dashboard extends React.Component {
         credentials: res
       });
 
-      let cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
-      
-      cognitoIdentityServiceProvider.describeUserPool( {UserPoolId: awsconfig["aws_user_pools_id"]}, 
-        (err, data) => {
-          if (err) {
-            console.log(err);
-            this.setState({
-              numUsers: -1,
-              numUsersLoading: false
-            });
-          } else {
-            this.setState({
-              numUsers: data.UserPool.EstimatedNumberOfUsers,
-              numUsersLoading: false
-            });
-          }
-        }
-      );
+      getNumberOfUsers()
+      .then( res => {
+        this.setState({
+          numUsers: res,
+          numUsersLoading: false,
+        })
+      })
+      .catch( err => {
+        console.log(err);
+        this.setState({
+          numUsers: -1,
+          numUsersLoading: false
+        });
+      });
 
-      cognitoIdentityServiceProvider.listUsersInGroup({
-        UserPoolId: awsconfig["aws_user_pools_id"],
-        GroupName: "agent",
-      }, 
-      (err, data) => {
-        if (err) {
-          console.log(err);
-          this.setState({
-            numAgents: -1,
-            numAgentsLoading: false
-          });
-        } else {
-          this.setState({
-            numAgents: data.Users.length,
-            numAgentsLoading: false,
-          });
-        }
+
+      getUsersInGroup('agent')
+      .then( res => {
+        this.setState({
+          numAgents: res.length,
+          numAgentsLoading: false,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          numAgents: -1,
+          numAgentsLoading: false
+        });
       });
     });
 
 
-    let forwardToken = null;
-    let remaining = true;
-    let totalArea = 0.0;
-
-
-    try {
-      while(remaining) {
-        const res = await API.graphql(graphqlOperation(queries.listFarms, { limit: 100 , nextToken: forwardToken}));
-        
-        for (let farm of res.data.listFarms.items) {
-          totalArea += farm.area;
-        }
-
-        if(res.data.listFarms.nextToken == null) {
-          remaining = false;
-        } else {
-          forwardToken = res.data.listFarms.nextToken;
-        }
-      }
-
+    getAllFarms()
+    .then(res => {
       this.setState({
         areasLoading: false,
-        area: Math.round(totalArea),
+        area: Math.round(res.map((val) => val.area).reduce((a, b) => (a + b))),
       });
-
-    }
-    catch (err) {
+    })
+    .catch(err => {
       console.log(err);
       this.setState({
         areasLoading: false,
         area: -1,
       });
-    }
+    });
   }
 
   setBgChartData = name => {
@@ -172,7 +152,7 @@ class Dashboard extends React.Component {
     return (
       <>
         <div className="content">
-          <Row>
+          {/* <Row>
             <Col xs="12">
               <Card className="card-chart">
                 <CardHeader>
@@ -657,7 +637,7 @@ class Dashboard extends React.Component {
                 </CardBody>
               </Card>
             </Col>
-          </Row>
+          </Row> */}
           <Row>
             <Col lg="6">
                 <Card className="card-chart">
