@@ -28,8 +28,9 @@ import {
     Col,
 } from "reactstrap";
 
+import FilteringPlugin from "components/FixedPlugin/FilteringPlugin";
 
-import { getAllHarvests } from "utilities/dbOps";
+import { getAllHarvests, updateCredentials } from "utilities/dbOps";
 import textParser from "utilities/TextParser";
 
 
@@ -45,27 +46,32 @@ class HarvestTable extends React.Component {
         this.state = {
             harvestsLoading: true,
             harvests: [],
+            filteredHarvests: [],
         };
     }
 
 
     componentDidMount() {
-
-        getAllHarvests()
-            .then(res => {
-                this.setState({
-                    harvests: res,
-                    harvestsLoading: false,
+        updateCredentials().then(() => {
+            getAllHarvests()
+                .then(res => {
+                    this.setState({
+                        harvests: res,
+                        filteredHarvests: res,
+                        harvestsLoading: false,
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.setState({
+                        harvestsLoading: false
+                    });
                 });
-            })
-            .catch(err => {
-                console.log(err);
-                this.setState({
-                    harvestsLoading: false
-                });
-            });
+        });
 
     }
+
+    setFilteredHarvests = (filteredData) => this.setState({ filteredHarvests: filteredData });
 
     render() {
         return (
@@ -115,7 +121,7 @@ class HarvestTable extends React.Component {
                                                         </td>
                                                     </tr>
                                                 ) : (
-                                                        this.state.harvests.map(
+                                                        this.state.filteredHarvests.map(
                                                             val => (
                                                                 <tr key={val.id}>
                                                                     <td>{textParser(val.crop)}</td>
@@ -149,6 +155,11 @@ class HarvestTable extends React.Component {
                             </Card>
                         </Col>
                     </Row>
+                    <FilteringPlugin
+                        mode="harvest"
+                        data={this.state.harvests}
+                        setFilteredData={this.setFilteredHarvests}
+                    />
                 </div>
             </>
         );

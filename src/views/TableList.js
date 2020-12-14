@@ -42,6 +42,9 @@ import 'assets/css/my-popup.css';
 import { PuffLoader, MoonLoader } from "react-spinners";
 import HarvestsPopupView from 'views/HarvestsPopupView';
 
+import FilteringPlugin from "components/FixedPlugin/FilteringPlugin";
+
+
 
 let i = 0;
 
@@ -82,6 +85,7 @@ class Tables extends React.Component {
     this.state = {
       usersLoading: true,
       users: [],
+      filteredUsers: [],
       selectedUserSub: null,
       openHarvestModal: false,
     };
@@ -108,6 +112,7 @@ class Tables extends React.Component {
         .then(res => {
           this.setState({
             users: res,
+            filteredUsers: res,
             usersLoading: false,
           });
         })
@@ -120,6 +125,8 @@ class Tables extends React.Component {
     });
 
   }
+
+  setFilteredUsers = data => this.setState({ filteredUsers: data });
 
   render() {
     return (
@@ -158,7 +165,7 @@ class Tables extends React.Component {
                             </td>
                           </tr>
                         ) : (
-                            this.state.users.map(
+                            this.state.filteredUsers.map(
                               val => (
                                 <tr key={val.sub}>
                                   <td>{textParser(val.fullName)}</td>
@@ -205,6 +212,11 @@ class Tables extends React.Component {
               onClick={this.closeModal}
             />
           </Popup>
+          <FilteringPlugin 
+            mode="user"
+            data={this.state.users}
+            setFilteredData={this.setFilteredUsers}
+          />
         </div>
       </>
     );

@@ -23,6 +23,7 @@ import "assets/demo/demo.css";
 import "assets/css/nucleo-icons.css";
 import "assets/css/text.css";
 import "assets/css/progress-button.css";
+import "assets/css/mapmyfarm-admin.css";
 
 Amplify.configure(awsconfig);
 Amplify.configure(APIConfig);

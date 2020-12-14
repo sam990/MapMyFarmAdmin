@@ -18,7 +18,12 @@
 
 import React, { Component } from "react";
 
-import { createFarmFilterIndex, filter } from 'utilities/Filter';
+import {
+    createFarmFilterIndex,
+    createHarvestFilterIndex,
+    createUserFilterIndex,
+    filter
+} from 'utilities/Filter';
 
 
 import { PuffLoader } from "react-spinners";
@@ -26,7 +31,6 @@ import { PuffLoader } from "react-spinners";
 import Select from 'react-select';
 
 import ProgressButton from 'react-progress-button';
-
 
 
 // reactstrap components
@@ -49,14 +53,36 @@ class FilteringPlugin extends Component {
                     this.setState({
                         initLoading: false,
                         filterFields: res,
-                        filterState: Object.assign({}, ...res.map(e => ({ [e.id]: [] }))),
+                        filterState: Object.assign({}, ...res.map(e => ({ [e.ID]: [] }))),
                     });
-                })
+                });
+                break;
+
+            case 'harvest':
+                createHarvestFilterIndex(data).then(res => {
+                    this.setState({
+                        initLoading: false,
+                        filterFields: res,
+                        filterState: Object.assign({}, ...res.map(e => ({ [e.ID]: [] }))),
+                    });
+                });
+                break;
+
+            case 'user':
+                createUserFilterIndex(data).then(res => {
+                    this.setState({
+                        initLoading: false,
+                        filterFields: res,
+                        filterState: Object.assign({}, ...res.map(e => ({ [e.ID]: [] }))),
+                    });
+                });
+                break;
         }
     }
 
     componentDidMount() {
         this.initialise();
+        // setTimeout(() => { throw ""; }, 10000 );
     }
 
     componentDidUpdate(prevProps) {
@@ -93,17 +119,25 @@ class FilteringPlugin extends Component {
         })
     }
 
+    clearFilter = () => {
+        this.setState({
+            filterState: Object.assign({}, ...this.state.filterFields.map(e => ({ [e.ID]: [] })))
+        });
+        this.props.setFilteredData(this.props.data);
+    }
+
     handleApplyFilter = async () => {
         const filterAttr = {};
         Object.entries(this.state.filterState)
-        .forEach(([key, values]) => {
-            filterAttr[key] = values.map(e => e.value);
-        });
+            .forEach(([key, values]) => {
+                filterAttr[key] = values?.map(e => e.value);
+            });
 
         const filteredData = await filter(this.props.data, filterAttr);
 
         this.props.setFilteredData(filteredData);
         return true;
+
     }
 
     render() {
@@ -113,7 +147,7 @@ class FilteringPlugin extends Component {
                     <div onClick={this.handleClick}>
                         <i className="fa fa-cog fa-2x" />
                     </div>
-                    <div className="dropdown-menu show px-3 text-center">
+                    <div className="dropdown-menu show text-center">
 
                         <strong className="text-white d-block py-2">Filter</strong>
                         {
@@ -122,28 +156,29 @@ class FilteringPlugin extends Component {
                                     <PuffLoader color="#1d8cf8" />
                                 </div>) :
                                 (
-                                    this.state.filterFields.map(e => (
-                                        <div className="py-2">
-                                            <Select
-                                                isMulti
-                                                name={e.Name}
-                                                value={this.state.filterState[e.ID]}
-                                                id={e.ID}
-                                                options={e.Values}
-                                                placeholder={`Filter by ${e.Name}`}
-                                                onChange={(val) => this.handleSelectChange(e.ID, val)}
-                                            />
-                                        </div>
-                                    ))
+                                        this.state.filterFields.map((e) => (
+                                            <div className="py-2 px-2" key={e.ID}>
+                                                <Select
+                                                    isMulti
+                                                    menuPlacement="auto"
+                                                    name={e.Name}
+                                                    value={this.state.filterState[e.ID]}
+                                                    id={e.ID}
+                                                    options={e.Values}
+                                                    placeholder={`Filter by ${e.Name}`}
+                                                    onChange={(val) => this.handleSelectChange(e.ID, val)}
+                                                />
+                                            </div>
+                                        ))
                                 )
                         }
 
-                        <Button color="link"><span className="my-danger-text-btn">Clear Filters</span></Button>
+                        <Button className="px-2" color="link" onClick={this.clearFilter}><span className="my-danger-text-btn">Clear Filters</span></Button>
                         <ProgressButton
                             type="submit"
                             controlled={false}
                             onClick={this.handleApplyFilter}
-                            className="pb-3"
+                            className="pb-3 px-2"
                         >
                             <span className="my-text">Apply Filter</span>
                         </ProgressButton>

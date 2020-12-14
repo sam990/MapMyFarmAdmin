@@ -18,12 +18,11 @@
 import React, { useState, useEffect } from "react";
 // react plugin used to create google maps
 import {
-  withScriptjs,
-  withGoogleMap,
+  LoadScriptNext,
   GoogleMap,
   Marker,
   Polygon,
-} from "react-google-maps";
+} from "@react-google-maps/api";
 
 import classnames from 'classnames';
 
@@ -42,40 +41,36 @@ import { UserNameView, UserNumberView } from "views/UserDetailViews";
 
 import FilteringPlugin from "components/FixedPlugin/FilteringPlugin";
 
-const MapWrapper = withScriptjs(
-  withGoogleMap(props => (
+const MapWrapper = props => (
+  <LoadScriptNext
+    googleMapsApiKey={props.apiKey}
+    loadingElement={props.loadingElement}
+  >    
+    
     <GoogleMap
-      defaultZoom={4}
-      defaultCenter={{ lat: 23.5937, lng: 78.9629 }}
-      defaultOptions={{
+      zoom={4}
+      center={{ lat: 23.5937, lng: 78.9629 }}
+      options={{
         // scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
         streetViewControl: false,
       }}
+      mapContainerClassName="h-100"
     >
-      {/* {props.polygons.map(
+      {props.polygons.map(
         (val, i) => (<Polygon key={props.farms[i].id} path={val} options={{ fillColor: "blue", strokeWeight: 0 }} onClick={() => { props.openModal(props.farms[i]); }} />)
-      )} */}
+      )}
 
-      {/* {props.polygons.map(
+      {props.polygons.map(
         (val, i) => (<Marker key={props.farms[i].id} position={val[0]} onClick={() => { props.openModal(props.farms[i]); }} />)
-      )} */}
-      {
-        props.showMarker && <Marker position={{ lat: -34.397, lng: 150.644 }}  />
-      }
+      )}
     </GoogleMap>
-  ))
+  </LoadScriptNext>
 );
 
 function Map(props) {
   const { loading, polygons, farms } = props;
 
-  console.log(polygons);
-
   const [modalDetails, setModalDetails] = useState({ selectedFarm: null, openModal: false, });
-
-  const [showMarker, setShowMarker] = useState(true);
-
-  setTimeout(()=> setShowMarker(false), 5000);
 
   const openModal = (farm) => {
     setModalDetails({
@@ -105,14 +100,11 @@ function Map(props) {
                   style={{ position: "relative", overflow: "hidden", textAlign: "center" }}
                 >
                   <MapWrapper
-                    googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1DSNQSBG2jH_VCslFAkBH2hl7p2JxN7E"
+                    apiKey="AIzaSyD1DSNQSBG2jH_VCslFAkBH2hl7p2JxN7E"
                     loadingElement={<div style={{ height: `100%` }} />}
-                    containerElement={<div style={{ height: `100%` }} />}
-                    mapElement={<div style={{ height: `100%` }} />}
                     polygons={polygons}
                     farms={farms}
                     openModal={openModal}
-                    showMarker={showMarker}
                   />
                   <div
                     style={{
