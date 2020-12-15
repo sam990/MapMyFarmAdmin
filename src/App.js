@@ -1,22 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import MySignIn from './SignIn'
-import { ThemeProvider } from '@material-ui/core/styles'
+import MySignIn from 'views/SignIn';
 import { createMuiTheme } from '@material-ui/core'
-import bgImage from './signin_bg.jpg';
-import Amplify, { Auth, API, graphqlOperation } from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
 import awsconfig from './aws-exports';
-// import { withAuthenticator } from '@aws-amplify/ui-react';
-import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, RequireNewPassword, SignIn, SignUp, VerifyContact, withAuthenticator, SignOut } from 'aws-amplify-react';
-import { Button } from '@material-ui/core';
+
+import { withAuthenticator } from 'aws-amplify-react';
+
 import { createBrowserHistory } from "history";
-import { Router, Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
-import AWS from "aws-sdk";
+import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
+
 import APIConfig from "aws-api-config";
 
 import AdminLayout from "layouts/Admin/Admin.js";
-import RTLLayout from "layouts/RTL/RTL.js";
 
 import "assets/scss/black-dashboard-react.scss";
 import "assets/demo/demo.css";
@@ -27,10 +23,6 @@ import "assets/css/mapmyfarm-admin.css";
 Amplify.configure(awsconfig);
 Amplify.configure(APIConfig);
 
-// let myCredentials = new AWS.CognitoIdentityCredentials({ IdentityPoolId: awsconfig["aws_cognito_identity_pool_id"] });
-// AWS.config.region = awsconfig["aws_cognito_region"];
-// AWS.config.credentials = myCredentials;
-// Auth.signOut();
 
 const theme = createMuiTheme({
   palette: {
@@ -57,20 +49,6 @@ function App(props) {
     }
   }
   return (
-    // <ThemeProvider theme={theme}>
-    //   <div className='App'>
-    //     <div className='App-window'>
-    //       <SignIn/>
-    //     </div>
-    //   </div>
-    // </ThemeProvider>
-    // <ThemeProvider theme={theme}>
-
-    // <Button onClick={signOut} /* style={buttonStyle} */ >
-    //   SignOut
-    // </Button>
-
-    // </ThemeProvider> 
 
     <BrowserRouter history={hist}>
       <Switch>
@@ -82,14 +60,6 @@ function App(props) {
   );
 }
 
-// async function signOut(event) {
-//   try {
-//     await Auth.signOut();
-//     this.changeState('signedOut');
-//   } catch (err) {
-//     console.log(err);
-//   }
-// }
 
 export default withAuthenticator(App, false, [
   <MySignIn />,
@@ -100,5 +70,3 @@ export default withAuthenticator(App, false, [
   // <ForgotPassword/>,
   // <RequireNewPassword />
 ], null, theme);
-
-// export default withAuthenticator(App);
