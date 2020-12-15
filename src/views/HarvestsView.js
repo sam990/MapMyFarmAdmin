@@ -26,11 +26,12 @@ import {
     Table,
     Row,
     Col,
+    Button,
 } from "reactstrap";
 
 import FilteringPlugin from "components/FixedPlugin/FilteringPlugin";
 
-import { getAllHarvests, updateCredentials } from "utilities/dbOps";
+import { getAllHarvests, updateCredentials, getAgentHarvests } from "utilities/dbOps";
 import textParser from "utilities/TextParser";
 
 
@@ -52,32 +53,59 @@ class HarvestTable extends React.Component {
 
 
     componentDidMount() {
+
+        const successCallback = res => {
+            this.setState({
+                harvests: res,
+                filteredHarvests: res,
+                harvestsLoading: false,
+            });
+        }
+
+        const errCallback = err => {
+            console.log(err);
+            this.setState({
+                harvestsLoading: false
+            });
+        }
+
+        const locState = this.props.location.state;
+
         updateCredentials().then(() => {
-            getAllHarvests()
-                .then(res => {
-                    this.setState({
-                        harvests: res,
-                        filteredHarvests: res,
-                        harvestsLoading: false,
-                    });
-                })
-                .catch(err => {
-                    console.log(err);
-                    this.setState({
-                        harvestsLoading: false
-                    });
-                });
+
+            if (locState?.agentSub) {
+                getAgentHarvests(locState.agentSub)
+                    .then(successCallback)
+                    .catch(errCallback);
+            } else {
+                getAllHarvests()
+                    .then(successCallback)
+                    .catch(errCallback);
+            }
         });
 
     }
 
     setFilteredHarvests = (filteredData) => this.setState({ filteredHarvests: filteredData });
 
+    reset = () => {
+        this.props.history.replace(this.props.location.pathname);
+        window.location.reload();
+    }
+
     render() {
+        const locState = this.props.location.state;
         return (
             <>
                 <div className="content">
                     <Row>
+                        <Col xs="12" className="my-text text-center">
+                            {
+                                locState?.agentSub ? (
+                                    <span>Showing Harvests by agent: {locState.fullName} ({locState.phoneNumber}) <Button color="link" onClick={this.reset}><span className="my-danger-text-btn">Reset</span></Button></span>
+                                ) : null
+                            }
+                        </Col>
                         <Col md="12">
                             <Card className="card-plain">
                                 <CardHeader>
@@ -127,7 +155,7 @@ class HarvestTable extends React.Component {
                                                                     <td>{textParser(val.crop)}</td>
                                                                     <td><UserNameView sub={val.ownerSub} /></td>
                                                                     <td><UserNumberView sub={val.ownerSub} /></td>
-                                                                    <td>{textParser(val.sowing_date)}</td>
+                                                                    <td>{(new Date(val.sowing_date.split('+')[0])).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}</td>
                                                                     <td>{textParser(val.seed_brand)}</td>
                                                                     <td>{textParser(val.planting_mode)}</td>
                                                                     <td>{textParser(val.weeding_mode)}</td>

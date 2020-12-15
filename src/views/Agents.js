@@ -36,6 +36,8 @@ import {
     FormFeedback
 } from "reactstrap";
 
+import { Link } from "react-router-dom";
+
 import ProgressButton from 'react-progress-button';
 
 import { getAllHarvests, updateCredentials, getAgentFarms, getAgentHarvests, getUsersInGroup, createAgent, changePassword } from "utilities/dbOps";
@@ -44,6 +46,7 @@ import textParser from "utilities/TextParser";
 import { PuffLoader, MoonLoader } from "react-spinners";
 
 import { UserNameView, UserNumberView } from "views/UserDetailViews";
+import { string } from "prop-types";
 
 
 function LoadingViewWrapper(currState, modifierFunction) {
@@ -494,6 +497,7 @@ class AgentDetailView extends React.Component {
             });
     }
 
+
     render() {
         return (
             <div className="content">
@@ -511,7 +515,16 @@ class AgentDetailView extends React.Component {
 
                 <Row>
                     <Col xs="12" className="text-center pb-2">
-                        <Button color="link"><u className="my-text">View Mapped Farms</u></Button>
+                        <Link to={{
+                            pathname: "/farms",
+                            state: {
+                                agentSub: this.props.sub,
+                                phoneNumber: this.props.username,
+                                fullName: this.props.fullName,
+                            }
+                        }}>
+                            <strong className="my-danger-text-btn pt-1">View Mapped Farms</strong>
+                        </Link>
                     </Col>
                 </Row>
 
@@ -523,7 +536,16 @@ class AgentDetailView extends React.Component {
 
                 <Row>
                     <Col xs="12" className="text-center pb-2">
-                        <Button color="link"><u className="my-text">View Entered Harvets</u></Button>
+                        <Link to={{
+                            pathname: "/harvests",
+                            state: {
+                                agentSub: this.props.sub,
+                                phoneNumber: this.props.username,
+                                fullName: this.props.fullName,
+                            }
+                        }}>
+                           <strong className="my-danger-text-btn pt-1">View Entered Harvets</strong>
+                        </Link>
                     </Col>
                 </Row>
 
@@ -573,7 +595,7 @@ function AgentTile(props) {
                 </CardHeader>
                 <CardBody>
                     <Collapse isOpen={expanded}>
-                        <AgentDetailView sub={user.sub} username={user.phone_number}/>
+                        <AgentDetailView sub={user.sub} username={user.phone_number} fullName={user.fullName}/>
                     </Collapse>
                 </CardBody>
             </Card>

@@ -21,7 +21,6 @@ import RTLLayout from "layouts/RTL/RTL.js";
 import "assets/scss/black-dashboard-react.scss";
 import "assets/demo/demo.css";
 import "assets/css/nucleo-icons.css";
-import "assets/css/text.css";
 import "assets/css/progress-button.css";
 import "assets/css/mapmyfarm-admin.css";
 
@@ -75,9 +74,9 @@ function App(props) {
 
     <BrowserRouter history={hist}>
       <Switch>
-        <Route path="/admin" render={props => <AdminLayout {...props} handleLogoutClick={signOut} />} />
+        <Route path="/" render={props => <AdminLayout {...props} handleLogoutClick={signOut} />} />
         {/* <Route path="/rtl" render={props => <RTLLayout {...props} />} /> */}
-        <Redirect from="/" to="/admin/dashboard" />
+        <Redirect from="/" to="/dashboard" />
       </Switch>
     </BrowserRouter>
   );

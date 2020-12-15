@@ -79,28 +79,25 @@ class Admin extends React.Component {
     this.setState({ sidebarOpened: !this.state.sidebarOpened });
   };
   getRoutes = routes => {
-    return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
-        return (
-          <Route
-            path={prop.layout + prop.path}
-            component={prop.component}
-            key={key}
-          />
-        );
-      } else {
-        return null;
-      }
-    });
+    return routes.map((prop, key) => (
+      <Route
+        path={prop.path}
+        component={prop.component}
+        key={key}
+      />
+    )
+    );
   };
+
   handleBgClick = color => {
     this.setState({ backgroundColor: color });
   };
+
   getBrandText = path => {
     for (let i = 0; i < routes.length; i++) {
       if (
         this.props.location.pathname.indexOf(
-          routes[i].layout + routes[i].path
+          routes[i].path
         ) !== -1
       ) {
         return routes[i].name;
@@ -137,12 +134,11 @@ class Admin extends React.Component {
             />
             <Switch>
               {this.getRoutes(routes)}
-              <Redirect from="*" to="/admin/dashboard"/>
+              <Redirect from="*" to="/dashboard" />
             </Switch>
-            {// we don't want the Footer to be rendered on map page
-            this.props.location.pathname.indexOf("maps") !== -1 ? null : (
-              <Footer fluid />
-            )}
+            
+            <Footer fluid />
+            
           </div>
         </div>
         {/* <FixedPlugin

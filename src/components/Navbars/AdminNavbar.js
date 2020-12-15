@@ -85,6 +85,15 @@ class AdminNavbar extends React.Component {
       modalSearch: !this.state.modalSearch
     });
   };
+
+  toggleMode = e => {
+    if (!e.target.checked) {
+      document.body.classList.add("white-content");
+    } else {
+      document.body.classList.remove("white-content");
+    }
+  };
+
   render() {
     return (
       <>
@@ -180,6 +189,14 @@ class AdminNavbar extends React.Component {
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown> */}
+                <li className="nav-item">
+                  <div className="d-flex flex-column h-100 w-100 justify-content-center">
+                    <div className="day-night-toggle">
+                      <input type="checkbox" defaultChecked onChange={this.toggleMode} />
+                      <span></span>
+                    </div>
+                  </div>
+                </li>
                 <UncontrolledDropdown nav>
                   <DropdownToggle
                     caret

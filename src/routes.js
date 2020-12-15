@@ -47,7 +47,7 @@ var routes = [
     path: "/farms",
     name: "Farms",
     rtlName: "خرائط",
-    icon: "tim-icons icon-pin",
+    icon: "tim-icons icon-square-pin",
     component: Map,
     layout: "/admin"
   },
@@ -71,7 +71,7 @@ var routes = [
     path: "/users",
     name: "Users",
     rtlName: "قائمة الجدول",
-    icon: "tim-icons icon-puzzle-10",
+    icon: "tim-icons icon-single-02",
     component: TableList,
     layout: "/admin"
   },

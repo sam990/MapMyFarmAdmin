@@ -31,10 +31,9 @@ import { Card, CardHeader, CardBody, CardTitle, Table, Row, Col, Nav, NavItem, N
 
 import { PuffLoader, MoonLoader } from "react-spinners";
 import Popup from 'reactjs-popup';
-import 'assets/css/my-popup.css';
 import HarvestsPopupView from 'views/HarvestsPopupView';
 
-import { getUser, getAllFarms, getPathOfFarm, updateCredentials, getHarvestsOfFarm } from "utilities/dbOps";
+import { getUser, getAllFarms, getPathOfFarm, updateCredentials, getUserFarms, getAgentFarms } from "utilities/dbOps";
 import textParser from "utilities/TextParser";
 
 import { UserNameView, UserNumberView } from "views/UserDetailViews";
@@ -45,8 +44,8 @@ const MapWrapper = props => (
   <LoadScriptNext
     googleMapsApiKey={props.apiKey}
     loadingElement={props.loadingElement}
-  >    
-    
+  >
+
     <GoogleMap
       zoom={4}
       center={{ lat: 23.5937, lng: 78.9629 }}
@@ -161,7 +160,7 @@ function FarmDetailsPopupView(props) {
       <span className="py-1">Area: <strong>{farm.area + " acres"}</strong></span>
       <span className="py-1">Locale: <strong>{textParser(farm.locale)}</strong></span>
       <span className="py-1">Land Type: <strong>{textParser(farm.land_type)}</strong></span>
-      <Button style={{overflow: "visible"}} color="link" className="pt-4 text-info" onClick={() => props.openHarvestsPopup(farm)}><span>Open Associated Harvests</span></Button>
+      <Button style={{ overflow: "visible" }} color="link" className="pt-4 text-info" onClick={() => props.openHarvestsPopup(farm)}><span>Open Associated Harvests</span></Button>
     </div>
   );
 
@@ -265,47 +264,47 @@ class FarmsView extends React.Component {
     });
   }
 
-  testFunc = () => {
-    if (this.state.farms.length === this.state.position) {
-      return;
-    }
-
-    const i = this.state.position;
-
-    const path = getPathOfFarm(this.state.farms[i]);
-
-    this.setState({
-      polygons: [ /* ...this.state.polygons, */ path ],
-      position: i + 1,
-    });
-
-    setTimeout(this.testFunc, 1000);
-  }
 
   componentDidMount() {
 
     updateCredentials().then(() => {
 
-      getAllFarms().then(res => {
+      const successCallback = res => {
         this.setState({
           loading: false,
           farms: res,
           filteredFarms: res,
           polygons: res.map(getPathOfFarm),
         });
-        // this.testFunc();
-      })
-        .catch(err => {
-          console.log(err);
-          this.setState({
-            loading: false,
-          });
+      }
+
+      const errCallback = err => {
+        console.log(err);
+        this.setState({
+          loading: false,
         });
+      }
+
+      const locState = this.props.location.state;
+
+      if (locState?.userSub) {
+        getUserFarms(locState.userSub)
+          .then(successCallback)
+          .catch(errCallback);
+      } else if (locState?.agentSub) {
+        getAgentFarms(locState.agentSub)
+          .then(successCallback)
+          .catch(errCallback);
+      } else {
+        getAllFarms()
+          .then(successCallback)
+          .catch(errCallback);
+      }
     });
   }
 
-  setFilteredFarms= (filteredArr) => this.setState({ 
-    filteredFarms : filteredArr,
+  setFilteredFarms = (filteredArr) => this.setState({
+    filteredFarms: filteredArr,
     polygons: filteredArr.map(getPathOfFarm),
   });
 
@@ -313,62 +312,85 @@ class FarmsView extends React.Component {
     if (this.state.activeTab !== tab) this.setState({ activeTab: tab });
   }
 
+  reset = () => {
+    this.props.history.replace(this.props.location.pathname);
+    window.location.reload();
+  }
+
   render() {
+
+    const locState = this.props.location.state;
+
     return (
       <div className="content">
-        <Nav tabs>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: this.state.activeTab === '1' }, "bg-transparent")}
-              onClick={() => { this.toggle('1'); }}
-              style={{ cursor: 'pointer' }}
-            >
-              Map View
+        <Row>
+          <Col xs="12" className="my-text text-center">
+            {
+              locState?.userSub ? (
+                <span>Showing farms for user: {locState.fullName} ({locState.phoneNumber}) <Button color="link" onClick={this.reset}><span className="my-danger-text-btn">Reset</span></Button></span>
+              ) : locState?.agentSub ? (
+                <span>Showing farms by agent: {locState.fullName} ({locState.phoneNumber}) <Button color="link" onClick={this.reset}><span className="my-danger-text-btn">Reset</span></Button></span>
+              ) : null
+            }
+          </Col>
+
+          <Col xs="12">
+            <Nav tabs>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: this.state.activeTab === '1' }, "bg-transparent")}
+                  onClick={() => { this.toggle('1'); }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  Map View
             </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: this.state.activeTab === '2' }, "bg-transparent")}
-              onClick={() => { this.toggle('2'); }}
-              style={{ cursor: 'pointer' }}
-            >
-              Table View
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: this.state.activeTab === '2' }, "bg-transparent")}
+                  onClick={() => { this.toggle('2'); }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  Table View
             </NavLink>
-          </NavItem>
-        </Nav>
-        <TabContent activeTab={this.state.activeTab}>
-          <TabPane tabId="1">
-            <Map loading={this.state.loading} polygons={this.state.polygons} farms={this.state.filteredFarms} openHarvestsPopup={this.openModal} />
-          </TabPane>
-          <TabPane tabId="2">
-            <FarmsTableView loading={this.state.loading} farms={this.state.filteredFarms} openHarvestsPopup={this.openModal} />
-          </TabPane>
-        </TabContent>
-        <Popup
-          open={this.state.openHarvestModal}
-          modal
-          lockScroll
-          arrow="false"
-          position='center center'
-          onClose={this.closeModal}
-        >
-          <HarvestsPopupView farmID={this.state.selectedFarm?.id} />
-          <Button close
-            style={{
-              position: 'absolute',
-              right: -7,
-              top: -10,
-              color: 'white'
-            }}
-            onClick={this.closeModal}
-          />
-        </Popup>
-        <FilteringPlugin 
-          mode="farm"
-          data={this.state.farms}
-          setFilteredData={this.setFilteredFarms}
-        />
+              </NavItem>
+            </Nav>
+            <TabContent activeTab={this.state.activeTab}>
+              <TabPane tabId="1">
+                <Map loading={this.state.loading} polygons={this.state.polygons} farms={this.state.filteredFarms} openHarvestsPopup={this.openModal} />
+              </TabPane>
+              <TabPane tabId="2">
+                <FarmsTableView loading={this.state.loading} farms={this.state.filteredFarms} openHarvestsPopup={this.openModal} />
+              </TabPane>
+            </TabContent>
+            <Popup
+              open={this.state.openHarvestModal}
+              modal
+              lockScroll
+              arrow="false"
+              position='center center'
+              onClose={this.closeModal}
+            >
+              <HarvestsPopupView farmID={this.state.selectedFarm?.id} />
+              <Button close
+                style={{
+                  position: 'absolute',
+                  right: -7,
+                  top: -10,
+                  color: 'white'
+                }}
+                onClick={this.closeModal}
+              />
+            </Popup>
+            <FilteringPlugin
+              mode="farm"
+              data={this.state.farms}
+              setFilteredData={this.setFilteredFarms}
+            />
+          </Col>
+        </Row>
       </div>
+
     );
   }
 }

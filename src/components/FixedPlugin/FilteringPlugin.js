@@ -149,7 +149,7 @@ class FilteringPlugin extends Component {
                     </div>
                     <div className="dropdown-menu show text-center">
 
-                        <strong className="text-white d-block py-2">Filter</strong>
+                        <strong className="my-text d-block py-2">Filter</strong>
                         {
                             this.state.initLoading ?
                                 (<div className="d-inline-block py-5">

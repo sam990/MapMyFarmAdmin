@@ -17,6 +17,8 @@
 */
 import React, { useState, useEffect } from "react";
 
+import { Link } from "react-router-dom";
+
 // reactstrap components
 import {
   Card,
@@ -37,7 +39,6 @@ import { getUsersInGroup, getUserFarms, updateCredentials } from "utilities/dbOp
 import textParser from "utilities/TextParser";
 
 import Popup from 'reactjs-popup';
-import 'assets/css/my-popup.css';
 
 import { PuffLoader, MoonLoader } from "react-spinners";
 import HarvestsPopupView from 'views/HarvestsPopupView';
@@ -45,8 +46,6 @@ import HarvestsPopupView from 'views/HarvestsPopupView';
 import FilteringPlugin from "components/FixedPlugin/FilteringPlugin";
 
 
-
-let i = 0;
 
 function FarmNumberView({ sub }) {
 
@@ -129,6 +128,7 @@ class Tables extends React.Component {
   setFilteredUsers = data => this.setState({ filteredUsers: data });
 
   render() {
+
     return (
       <>
         <div className="content">
@@ -173,10 +173,16 @@ class Tables extends React.Component {
                                   <td>{textParser(val.email)}</td>
                                   <td>{textParser(val.locale)}</td>
                                   <td className="text-center"><FarmNumberView sub={val.sub} /></td>
-                                  <td className="text-center">-</td>
+                                  <td className="text-center">
+                                    <Link 
+                                      to={{
+                                        pathname: "/farms",
+                                        state: { userSub: val.sub, phoneNumber: val.phone_number, fullName: val.fullName }
+                                      }}><i className="tim-icons icon-minimal-down" /></Link>
+                                  </td>
                                   <td className="text-center">
                                     <Button color="link" onClick={() => this.openModal(val.sub)}>
-                                      <i className="tim-icons icon-minimal-down" />
+                                      <i className="tim-icons icon-minimal-down my-link-text" />
                                     </Button>
                                   </td>
                               <td>{textParser(val["custom:district"])}</td>

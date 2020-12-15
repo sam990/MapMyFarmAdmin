@@ -10,7 +10,6 @@ import {
 } from "reactstrap";
 
 import { PuffLoader, MoonLoader } from "react-spinners";
-import 'assets/css/my-popup.css';
 
 import { getHarvestsOfFarm, getUserHarvests } from "utilities/dbOps";
 import textParser from "utilities/TextParser";
